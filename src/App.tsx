@@ -1,6 +1,13 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Code2, Rocket, Heart, Image as ImageIcon, Upload } from 'lucide-react';
+import { Sparkles, Code2, Rocket, Heart, Image as ImageIcon, Upload, Menu, X } from 'lucide-react';
+
+const NAV_LINKS = [
+  { label: 'Beranda', href: '#' },
+  { label: 'Tentang', href: '#tentang' },
+  { label: 'Fitur', href: '#fitur' },
+  { label: 'Kontak', href: '#kontak' },
+];
 
 const PRESET_BACKGROUNDS = [
   {
@@ -24,6 +31,7 @@ const PRESET_BACKGROUNDS = [
 export default function App() {
   const [bgImage, setBgImage] = useState<string>(PRESET_BACKGROUNDS[0].url);
   const [showBgSelector, setShowBgSelector] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +43,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-6 overflow-hidden antialiased font-sans">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-6 pt-28 overflow-hidden antialiased font-sans">
       {/* Background Image Layer */}
       <div
         className="fixed inset-0 bg-cover bg-center bg-no-repeat transition-all duration-700 transform scale-105"
@@ -45,8 +53,83 @@ export default function App() {
       {/* Overlay Gradient for readability */}
       <div className="fixed inset-0 bg-black/20 backdrop-brightness-95" />
 
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-40 px-4 sm:px-6 pt-4">
+        <div className="max-w-6xl mx-auto flex items-center justify-between px-5 py-3 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg">
+          {/* Logo */}
+          <a href="#" className="flex items-center gap-2 shrink-0">
+            <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 shadow-inner">
+              <Sparkles className="w-5 h-5" />
+            </span>
+            <span className="text-base font-bold tracking-tight text-stone-900">
+              Welcome<span className="text-emerald-600">App</span>
+            </span>
+          </a>
+
+          {/* Desktop Links */}
+          <div className="hidden md:flex items-center gap-1">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="px-4 py-2 rounded-full text-sm font-medium text-stone-700 hover:text-emerald-700 hover:bg-emerald-50/70 transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center gap-2">
+            <button className="px-4 py-2 rounded-full text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer">
+              Mulai
+            </button>
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl text-stone-800 hover:bg-stone-100 transition-colors cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              className="md:hidden max-w-6xl mx-auto mt-2 rounded-2xl bg-white/90 backdrop-blur-xl border border-white/60 shadow-xl p-3"
+            >
+              <div className="flex flex-col gap-1">
+                {NAV_LINKS.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-2.5 rounded-xl text-sm font-medium text-stone-700 hover:text-emerald-700 hover:bg-emerald-50/70 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="mt-1 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors cursor-pointer"
+                >
+                  Mulai
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+
       {/* Floating Background Selector Toggle */}
-      <div className="fixed top-5 right-5 z-20">
+      <div className="fixed top-24 right-5 z-20">
         <button
           onClick={() => setShowBgSelector(!showBgSelector)}
           className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white/80 hover:bg-white backdrop-blur-md border border-white/60 text-stone-800 text-xs font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95 cursor-pointer"
